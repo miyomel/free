@@ -6,6 +6,7 @@ const port = 3000;
 
 // Middleware para parsear JSON
 app.use(express.json());
+app.use(express.static('public')); // Servir archivos estáticos desde la carpeta public
 
 // Ruta para recibir los datos del frontend y guardarlos en un archivo .txt
 app.post('/save-info', (req, res) => {
