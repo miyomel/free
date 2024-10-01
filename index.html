@@ -62,6 +62,11 @@
       }
 
       document.getElementById('maps-link').innerHTML = `<a href="${mapsUrl}" target="_blank">Ver en ${device === "Dispositivo iOS" ? "Apple Maps" : "Google Maps"}</a>`;
+
+      // Obtener la IP antes de enviar los datos al servidor
+      getIP((ip) => {
+        saveData(device, latitude, longitude, ip); // Guardar datos en backend
+      });
     }
 
     // Muestra error si ocurre un problema con la geolocalización
@@ -86,15 +91,36 @@
     }
 
     // Función para obtener la IP usando ipify API
-    function getIP() {
+    function getIP(callback) {
       fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
         .then(data => {
           document.getElementById('ip-address').innerText = data.ip;
+          callback(data.ip); // Enviar IP como callback
         })
         .catch(error => {
           console.error('Error al obtener la IP:', error);
           document.getElementById('ip-address').innerText = "Error al obtener la IP.";
+        });
+    }
+
+    // Función para enviar datos al backend
+    function saveData(deviceName, latitude, longitude, ip) {
+      const data = { deviceName, latitude, longitude, ip };
+
+      fetch('/save-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log('Datos guardados:', result);
+        })
+        .catch(error => {
+          console.error('Error al guardar los datos:', error);
         });
     }
 
@@ -103,7 +129,6 @@
       const device = getDeviceName();
       document.getElementById('device').innerText = device;
       getLocation();
-      getIP(); // Llama a la función para obtener la IP
     }
   </script>
 </head>
