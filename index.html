@@ -43,7 +43,7 @@
       }
     }
 
-    // Muestra la posición en el DOM y genera el enlace a Google Maps
+    // Muestra la posición en el DOM y genera el enlace a Google Maps o Apple Maps
     function showPosition(position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
@@ -51,9 +51,17 @@
       document.getElementById('location').innerHTML =
         `Latitud: ${latitude}<br>Longitud: ${longitude}`;
 
-      // Crear enlace a Google Maps
-      const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-      document.getElementById('maps-link').innerHTML = `<a href="${googleMapsUrl}" target="_blank">Ver en Google Maps</a>`;
+      const device = getDeviceName();
+      let mapsUrl = '';
+
+      // Detectar si es un dispositivo iOS para usar Apple Maps, de lo contrario Google Maps
+      if (device === "Dispositivo iOS") {
+        mapsUrl = `https://maps.apple.com/?ll=${latitude},${longitude}`;
+      } else {
+        mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      }
+
+      document.getElementById('maps-link').innerHTML = `<a href="${mapsUrl}" target="_blank">Ver en ${device === "Dispositivo iOS" ? "Apple Maps" : "Google Maps"}</a>`;
     }
 
     // Muestra error si ocurre un problema con la geolocalización
@@ -104,7 +112,7 @@
   <p><strong>Nombre del Dispositivo:</strong> <span id="device">Cargando...</span></p>
   <p><strong>Ubicación Actual:</strong></p>
   <p id="location">Cargando ubicación...</p>
-  <p id="maps-link"></p> <!-- Enlace dinámico a Google Maps -->
+  <p id="maps-link"></p> <!-- Enlace dinámico a Google Maps o Apple Maps -->
   <p><strong>Dirección IP:</strong> <span id="ip-address">Cargando IP...</span></p>
 </body>
 </html>
