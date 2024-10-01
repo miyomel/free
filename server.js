@@ -7,7 +7,7 @@ const port = 3000;
 // Middleware para parsear JSON
 app.use(express.json());
 
-// Ruta para recibir los datos del frontend
+// Ruta para recibir los datos del frontend y guardarlos en un archivo .txt
 app.post('/save-info', (req, res) => {
   const { deviceName, latitude, longitude, ip } = req.body;
 
@@ -15,9 +15,9 @@ app.post('/save-info', (req, res) => {
   const logEntry = `Dispositivo: ${deviceName}, IP: ${ip}, Latitud: ${latitude}, Longitud: ${longitude}\n`;
 
   // Ruta al archivo .txt
-  const filePath = path.join(__dirname, 'device_info.txt');
+  const filePath = path.join(__dirname, 'informacion_dispositivo.txt');
 
-  // Guardar la información en un archivo .txt
+  // Guardar la información en un archivo .txt, se añade al final si ya existe
   fs.appendFile(filePath, logEntry, (err) => {
     if (err) {
       console.error('Error al escribir en el archivo:', err);
