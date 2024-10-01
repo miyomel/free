@@ -43,4 +43,68 @@
       }
     }
 
-    // Muestra la posición en el DOM
+    // Muestra la posición en el DOM y genera el enlace a Google Maps
+    function showPosition(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      document.getElementById('location').innerHTML =
+        `Latitud: ${latitude}<br>Longitud: ${longitude}`;
+
+      // Crear enlace a Google Maps
+      const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      document.getElementById('maps-link').innerHTML = `<a href="${googleMapsUrl}" target="_blank">Ver en Google Maps</a>`;
+    }
+
+    // Muestra error si ocurre un problema con la geolocalización
+    function showError(error) {
+      let message;
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          message = "Has denegado el permiso para obtener tu ubicación.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          message = "La información de la ubicación no está disponible.";
+          break;
+        case error.TIMEOUT:
+          message = "La solicitud de ubicación ha expirado.";
+          break;
+        case error.UNKNOWN_ERROR:
+        default:
+          message = "Ha ocurrido un error desconocido.";
+          break;
+      }
+      alert(message);
+    }
+
+    // Función para obtener la IP usando ipify API
+    function getIP() {
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('ip-address').innerText = data.ip;
+        })
+        .catch(error => {
+          console.error('Error al obtener la IP:', error);
+          document.getElementById('ip-address').innerText = "Error al obtener la IP.";
+        });
+    }
+
+    // Función que se ejecuta al cargar la página
+    function init() {
+      const device = getDeviceName();
+      document.getElementById('device').innerText = device;
+      getLocation();
+      getIP(); // Llama a la función para obtener la IP
+    }
+  </script>
+</head>
+<body onload="init()">
+  <h1>Información del Dispositivo, Ubicación e IP</h1>
+  <p><strong>Nombre del Dispositivo:</strong> <span id="device">Cargando...</span></p>
+  <p><strong>Ubicación Actual:</strong></p>
+  <p id="location">Cargando ubicación...</p>
+  <p id="maps-link"></p> <!-- Enlace dinámico a Google Maps -->
+  <p><strong>Dirección IP:</strong> <span id="ip-address">Cargando IP...</span></p>
+</body>
+</html>
