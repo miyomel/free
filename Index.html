@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Información de Dispositivo, Ubicación e IP</title>
+  <script>
+    // Función para obtener el nombre del dispositivo (o información básica)
+    function getDeviceName() {
+      const userAgent = navigator.userAgent;
+      let device = "Dispositivo desconocido";
+
+      switch (true) {
+        case /android/i.test(userAgent):
+          device = "Dispositivo Android";
+          break;
+        case /iPhone|iPad|iPod/i.test(userAgent):
+          device = "Dispositivo iOS";
+          break;
+        case /Windows/i.test(userAgent):
+          device = "PC con Windows";
+          break;
+        case /Mac/i.test(userAgent):
+          device = "Mac";
+          break;
+        case /Linux/i.test(userAgent):
+          device = "PC con Linux";
+          break;
+      }
+      return device;
+    }
+
+    // Función para obtener la geolocalización del usuario
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        alert("Geolocalización no es compatible con este navegador.");
+      }
+    }
+
+    // Muestra la posición en el DOM
+    function showPosition(position) {
+      document.getElementById('location').innerHTML =
+        `Latitud: ${position.coords.latitude}<br>Longitud: ${position.coords.longitude}`;
+    }
+
+    // Muestra error si ocurre un problema con la geolocalización
+    function showError(error) {
+      let message;
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          message = "Has denegado el permiso para obtener tu ubicación.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          message = "La información de la ubicación no está disponible.";
+          break;
+        case error.TIMEOUT:
+          message = "La solicitud de ubicación ha expirado.";
+          break;
+        case error.UNKNOWN_ERROR:
+        default:
+          message = "Ha ocurrido un error desconocido.";
+          break;
+      }
+      alert(message);
+    }
+
+    // Función para obtener la IP usando ipify API
+    function getIP() {
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('ip-address').innerText = data.ip;
+        })
+        .catch(error => {
+          console.error('Error al obtener la IP:', error);
+          document.getElementById('ip-address').innerText = "Error al obtener la IP.";
+        });
+    }
+
+    // Función que se ejecuta al cargar la página
+    function init() {
+      const device = getDeviceName();
+      document.getElementById('device').innerText = device;
+      getLocation();
+      getIP(); // Llama a la función para obtener la IP
+    }
+  </script>
+</head>
+<body onload="init()">
+  <h1>Información del Dispositivo, Ubicación e IP</h1>
+  <p><strong>Nombre del Dispositivo:</strong> <span id="device">Cargando...</span></p>
+  <p><strong>Ubicación Actual:</strong></p>
+  <p id="location">Cargando ubicación...</p>
+  <p><strong>Dirección IP:</strong> <span id="ip-address">Cargando IP...</span></p>
+</body>
+</html>
